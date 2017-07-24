@@ -1,0 +1,70 @@
+# Site settings
+title: I'm Chamu
+email: chamukallem@gmail.com
+baseurl: ""
+url: "https://chamukallem.github.io"
+description: "Chamu Kallem's portfolio"
+keywords: "react,reactjs,angular,ruby,rails,html,css,js,javascript,firebase"
+skills: "a web developer"
+meta_author: Kallem Chamu
+
+# Google webmaster tools
+google_verify:
+
+# https://ssl.bing.com/webmaster/configure/verify/ownership Option 2 content= goes here
+bing_verify:
+
+# Contact form:
+# - static : pass through formspree.io to validate email sending
+# - disqus : replace contact form by disqus thread
+# - comment the line below if you want to stick with the default PHP contact form
+contact: static
+
+# If you use disqus you need disqus shortname
+# https://help.disqus.com/customer/portal/articles/466208
+disqus_shortname: chamu
+
+# Color settings (hex-codes without the leading hash-tag)
+color:
+  # primary: 18bc9c #80B3FF
+  primary: 98c7d8
+  primary-dark: 454545
+  # primary-rgb: "24,288,156" #"128,179,255"
+  primary-rgb: "152,199,216"
+  # secondary: 2c3e50 #FD6E8A
+  # secondary-dark: 233140 #A2122F
+  secondary: dfd0b9
+  secondary-dark: 617692
+  accent-color: e5e3e3
+
+# Footer settings
+footer:
+  copyright: Chamu Kallem
+  # location: Redmond, WA
+  social: Around the Web
+  # credits: Credits
+
+# Social networks usernames (many more available: google-plus, flickr, dribbble, pinterest, instagram, tumblr, linkedin, etc.)
+social:
+  # - title: twitter
+  #   url: http://twitter.com/jekyllrb
+  # - title: facebook
+  #   url:
+  # - title: stack-overflow
+  #   url: http://stackoverflow.com/questions/tagged/jekyll
+  - title: linkedin
+    url: http://linkedin.com/chamukallem
+  - title: github
+    url: http://github.com/chamukallem
+
+# Postal address (add as many lines as necessary)
+address:
+  - line:
+  - line:
+
+# Credits content
+# credits: 'Freelancer is a free to use, open source Bootstrap theme created by <a href="http://startbootstrap.com">Start Bootstrap</a>.'
+
+# Build settings
+markdown: kramdown
+permalink: pretty

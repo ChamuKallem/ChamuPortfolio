@@ -1,0 +1,64 @@
+---
+layout: default
+modal-id: 2
+date: 2014-07-17
+img: ConfabbAppImage2x.png
+title: Confabb
+icon: fa-comments-o
+alt: image-alt
+project-date: April 2014
+client:
+category: Web Development
+description: A basic chat room app built using Rails and Google Firebase.
+
+---
+#### Summary
+
+ConfabbingApp is a simple chat room app where participants can create chat rooms and chat in those rooms. All rooms are available to all the users at any given time after they sign-up/sign-in.
+
+#### Project set-up
+I built this single page web application with AngularJS for the frontend and Google Firebase for authentication and data storage.  
+This was my first project using Firebase for authentication and storage. I used the auth.signInWithEmailAndPassword API to register the users and allow them to sign_in with their email.
+
+<!-- With the help of the [Firebase docs](https://firebase.google.com/docs/web/setup) initializing firebase on index.html as follows: -->
+
+<!-- ```javascript
+var config = {
+
+  apiKey: "XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX",
+  authDomain: "bloc-test-aebd8.firebaseapp.com",
+  databaseURL: "https://bloc-test-aebd8.firebaseio.com",
+  storageBucket: "bloc-test-aebd8.appspot.com",
+  messagingSenderId: "****************"
+};
+firebase.initializeApp(config);
+
+
+auth.signInWithEmailAndPassword
+auth.createUserWithEmailAndPassword
+firebase.auth().onAuthStateChanged
+
+``` -->
+
+<!-- Using the above calls to firebase a user can either sign-up/sign-in or enter an already logged-in session. -->
+
+![](/img/portfolio/ConfabSign-inpage.png)
+
+On success, a user can start chatting in any of the Confabbing rooms or create a new Confab room.
+
+roomCtrl (controller) and roomService (service) handle the messages sent accross the room for a user.
+
+```javascript
+service.addRoom
+service.displayRoom
+service.send
+service.updateUserInFB
+service.logout
+```
+The above calls to the roomService take care of all the operations of this Simple Chat room.
+
+![](/img/portfolio/ConfabChatRooms.png)
+
+The user/room model in the Firebase is as shown below.
+
+![](/img/portfolio/confabDatabase.png)

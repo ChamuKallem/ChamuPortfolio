@@ -1,0 +1,131 @@
+---
+layout: post
+title: Kiddos Cal
+feature-img: "img/KiddosCalimage.png"
+thumbnail-path: "img/KiddosCalimage.png"
+short-description: Kids Calendar Organizer App!!
+
+---
+#### Summary
+
+This is a Kids Calendar Organizer App that will let kids organize their chores/daily activities and let them earn points as they check them off when completed!!!!
+
+![](/img/KiddosCalTasksnPoints.png)
+
+#### Kid stories
+A kid should be able to:
+* sign-up (parent email to be entered during sign-up) or sign_in
+* select the current date or future date (in that month) in the Calendar to create todo-lists
+* assign points for each task listed (based on their parents feedback)
+* select previous dates (in that month) to view(only) their task status
+* add a task in the todo-list on current and future date with points associated with that task and should see 'Points lost(incomplete tasks)' increase by 1.
+* check-off a task when completed and should see 'Points lost' decrease by 1 and Total points increase by the points associated with that task.
+* should be able to toggle 'Show Completed ToDos' and see the results accordingly.
+* should not be able to delete tasks once listed.
+* should see Total points reset to 0 when Calendar month changes.
+* should be able to sign_out
+
+#### Project Set-up
+This web app was done using ReactJS as front-end and Firebase for authentication and storage.
+
+The 'Main' component in this app has three sub-components Login, SignUp and the actual TaskSection as show in the picture above.
+The routes for these components have been setup as:
+
+```javascript
+ReactDOM.render(
+    <Router history={browserHistory}>
+        <Route path="/" component={Main}>
+            <Route path="login" component={Login}/>
+            <Route path="signup" component={SignUp}/>
+            <Route path="tasksection" component={TaskSection}/>
+        </Route>
+    </Router>,
+    document.getElementById("app")
+);
+```
+![](/img/KiddosCalSignUp.png)
+
+Firebase authentication for login and sign-up are handled from Login.jsx and SignUp.jsx components.
+
+```javascript
+handleLogin = (email, password) =>{
+  const auth = firebase.auth();
+  auth.signInWithEmailAndPassword(email, password).then((userInfo) => {
+      const userid = userInfo.uid;
+      const dateString = moment().format('YYYY-MM-DD');
+      localStorage.setItem("loginSuccess",true);
+      browserHistory.push({
+          pathname: '/tasksection',
+          state: {userid: userid,
+              dateString: dateString
+              }
+      });
+  }).catch ( (e) => {
+      console.log('Login failed', e);
+  });
+};
+```
+```
+handleSignUp = (email, password, parentemail) =>{
+  const auth = firebase.auth();
+  const firebaseRef = firebase.database().ref().child('users/');
+  let loginSuccess = false;
+  auth.createUserWithEmailAndPassword(email, password)
+      .then((userInfo) => {
+          console.log('Entered signUp success');
+          const userid = userInfo.uid;
+          const dateString = moment().format('YYYY-MM-DD');
+          localStorage.setItem("loginSuccess",true);
+          firebaseRef.child('${userid}/').update({
+              email: email,
+              parentemail: parentemail,
+          });
+          console.log('Finished updating database');
+          browserHistory.push({
+              pathname: '/tasksection',
+              state: {userid: userid,
+                  dateString: dateString
+              }
+          });
+      }).catch ( (e) => {
+      console.log('Login failed', e);
+});
+```
+In the TaskSection component every UI control is a jsx component. On successful login/signup, componentWillMount is fired to load the TaskSection with the initial props.
+
+![](/img/KiddosCalTasksnPoints.png)
+
+![](/img/KiddosCalComponents.png)
+
+Each component has its events fired and subsequently handled by the TaskSection component. After successful event handling of any of the components, the componentDidUpdate is fired to set the state data.
+
+```javascript
+componentDidUpdate = () => {
+        const {todos, userid, dateString, totalPoints, lostPoints} = this.state;
+        TodoAPI.setTodos(todos, userid, dateString, totalPoints, lostPoints);
+    };
+```
+```javascript
+setTodos: function(todos, userid, dateString, totalPoints, lostPoints) {
+        var monthString = moment().format("YYYY-MMM");
+        if ($.isArray(todos)){
+            var firebaseDateRef = firebase.database().ref().child(`users/${userid}/days/${dateString}/`);
+            var dateRef = firebaseDateRef.update({
+                todos
+            });
+            if (totalPoints >= 0){
+                var firebaseUserRef = firebase.database().ref().child(`users/${userid}/points/${monthString}`);
+                firebaseUserRef.update({totalPoints, lostPoints});
+            }
+        }
+    }
+```
+In Firebase the data model is set as
+
+![](/img/KiddosCalDataModel.png)
+
+I have used [ React Infinite Calendar](http://clauderic.github.io/react-infinite-calendar/#/basic-settings/basic-configuration?_k=2g3pc7) library for the calendar component.
+
+#### Further development
+This app has been on my TodoList for a long time for my kids to organize their work. I plan to improve this app further with the next version(s) having a parent(admin) feature where the parents can manage adding templates to the kids tasks lists and pre-determine the points for tasks instead of kids assigning the points.
+I plan to make this a mobile/tablet app using React Native.

@@ -1,0 +1,259 @@
+---
+layout: default
+modal-id: 1
+date: 2014-07-18
+title: ChalkEmOffApp
+img: ChalkEmOffApp.png
+icon: fa-list-alt
+alt: image-alt
+project-date: February 2017
+client:
+category: Web Development, AngularJS, Rails
+description: Create Todos and chalk 'em off.
+
+---
+#### Summary
+
+Welcome to the organized world! Chalk'EmOff is a Todo App built with Rails 5 REST API and AngularJS front-end.
+This Todo web app will help end users build Todo Lists (categories) and individual items under each Todo List (Todo items).
+
+<!-- ![](/img/portfolio/ChalkEmOffApp.png) -->
+
+#### User stories
+* A user should be able to sign-up into a free a/c
+* A user should be able to login to an already registered a/c
+* A user should be able to create/edit/delete todo-lists (categories)
+* A user should be able to create/edit/delete items(tasks) under a particular todo-list
+* A user should be able list Todo categories and items.
+
+#### Project Set-up
+
+I first built a REST API to add, update, and delete Todos using Rails 5 and 'devise_token_auth' gem for user authentication. I then built an AngularJS US for this REST API.
+
+I created user->Todos->Items models and the routes as shown below:
+
+```ruby
+Rails.application.routes.draw do
+  mount_devise_token_auth_for 'User', at: 'auth'
+  scope module: 'api' do
+    namespace :v1 do
+      resources :users, only: [:index, :show]
+      resources :todos do
+        resources :items, only: [:index, :create]
+      end
+      resources :items, only: [:show, :destroy, :update]
+    end
+  end
+end
+```
+
+With this in place, I setup the followin routes established for user/session(auth), todos and todo-items models:
+
+```bash
+
+          Prefix Verb   URI Pattern                               Controller#Action
+       new_user_session GET    /auth/sign_in(.:format)            devise_token_auth/sessions#new
+           user_session POST   /auth/sign_in(.:format)            devise_token_auth/sessions#create
+   destroy_user_session DELETE /auth/sign_out(.:format)           devise_token_auth/sessions#destroy
+      new_user_password GET    /auth/password/new(.:format)       devise_token_auth/passwords#new
+     edit_user_password GET    /auth/password/edit(.:format)      devise_token_auth/passwords#edit
+          user_password PUT    /auth/password(.:format)           devise_token_auth/passwords#update
+                        POST   /auth/password(.:format)           devise_token_auth/passwords#create
+      user_registration DELETE /auth(.:format)                    devise_token_auth/registrations#destroy
+                        POST   /auth(.:format)                    devise_token_auth/registrations#create
+    auth_validate_token GET    /auth/validate_token(.:format)     devise_token_auth/token_validations#validate_token
+               v1_users GET    /v1/users(.:format)                api/v1/users#index
+                v1_user GET    /v1/users/:id(.:format)            api/v1/users#show
+          v1_todo_items GET    /v1/todos/:todo_id/items(.:format) api/v1/items#index
+                        POST   /v1/todos/:todo_id/items(.:format) api/v1/items#create
+               v1_todos GET    /v1/todos(.:format)                api/v1/todos#index
+                        POST   /v1/todos(.:format)                api/v1/todos#create
+                v1_todo GET    /v1/todos/:id(.:format)            api/v1/todos#show
+                        DELETE /v1/todos/:id(.:format)            api/v1/todos#destroy
+                v1_item GET    /v1/items/:id(.:format)            api/v1/items#show
+                        DELETE /v1/items/:id(.:format)            api/v1/items#destroy
+```
+#### Testing
+
+I have used the RSpec testing framework to test some of the above routes. I have also used Faker and FactoryGirl to seed testing data.
+
+Testing User authentication as follows:
+```ruby
+describe 'user unauthenticated ops' do
+  it 'registration returns success for valid params' do
+        post "/auth", params: {email: Faker::Internet.email, password: "12345678", password_confirmation: "12345678"}
+        expect(response).to be_success
+  end
+  it 'a new user added' do
+    expect{
+      post "/auth", params: {email: Faker::Internet.email, password: "12345678", password_confirmation: "12345678"}
+    }.to change(User, :count).by(1)
+  end
+end
+```
+
+Retrieving and creating todo_lists as follows:
+```ruby
+describe 'GET /todos/:id' do
+  before { get "/v1/todos/#{todo_id}"}
+  it "returns success" do
+    expect(response).to be_success
+  end
+  it "returns the todo" do
+    expect(json).not_to be_empty
+    expect(json['data']['id']).to eq(todo_id.to_s)
+  end
+end
+describe 'POST todos' do
+  let(:todo_values) { {title: "Kitchen List", complete: false, user_id: @id}}
+  before { post '/v1/todos', params: todo_values}
+  it "returns success" do
+    expect(response).to be_success
+  end
+  it "creates a todo" do
+    expect(json['data']['attributes']['title']).to eq('Kitchen List')
+  end
+  it "increases todo count by 1" do
+    expect{ post '/v1/todos', params: {title: "Costco List", complete: false, user_id: @id}}.to change(Todo, :count).by(1)
+  end
+end
+```
+
+Another example of testing 'deleting items under a todo_list':
+```ruby
+describe 'DELETE /v1/items/:id' do
+  it "reduces items count by 1" do
+    puts "before"
+    puts Item.count
+    expect{ delete "/v1/items/#{item_id}" }.to change(Item, :count).by(-1)
+    puts "after 1st delete"
+    puts Item.count
+  end
+  let(:item_id) { items.last.id }
+  it "returns status code" do
+    delete "/v1/items/#{item_id}"
+    expect(response).to have_http_status(204)
+    puts "after 2nd delete"
+    puts Item.count
+  end
+end
+```
+
+
+```ruby
+$authProvider.configure({
+  apiUrl: 'http://localhost:3000',
+  handleRegistrationResponse: function(response) {
+        alert("Registration response");
+        console.log(response.data);
+        return response.data;
+    }
+    .
+    .
+    .
+    .
+    angular
+        .module('ChalkEmOffApp', ['ng-token-auth', 'ui.router', 'ui.bootstrap'])
+        .config(config);
+```
+![](/img/portfolio/ChalkEmOffSignin.png)
+
+#### Views
+Once the user is signed-up/signed-in, the todoCtrl retrieves all (if previously created) todos and their items into $scope for that particular user_id by making the api-call to the ChalkEmOff app.
+
+```ruby
+$http.get('http://localhost:3000/v1/todos').
+then(function(responseList) {
+    console.log(responseList);
+    // $scope.users = response.data;
+    angular.forEach(responseList.data.data, function(obj){
+      if (obj.attributes["user-id"] == user_id){
+        Todos.push(obj);
+      }
+    });
+    // $scope.Todos = responseList.data.data;
+    $scope.Todos = Todos;
+```
+As the todos.html view loads, the $scope.Todos are read into the view.
+```
+<div class="list-group todos-left-panel-section">
+  <div ng-repeat="todo in Todos" >
+        <div class="list-group-item todo-name todo-name-hover" ng-click="todolist.showTodoItems(todo.id, todo.attributes.title )">
+            {{todo.attributes.title}}</br>
+        </div>
+  </div>
+  <div class="list-group-item new-todo-button">
+    <button type="button" name="new-todo-button" ng-click="todolist.createTodo()" ng-model="newTodo">New Todo</button>
+  </div>
+</div>
+```
+![](/img/portfolio/ChalkEmOffTodoList.png)
+
+#### Controllers
+
+userAuthCtrl and todosCtrl are the two main controller functionality.
+
+$auth.submitLogin, $auth.submitRegistration and $auth.signOut are managed by the userAuthCtrl.
+
+On the other hand, todosCtrl manages the api-calls to ChalkEmOff api-only app to make the necessary calls to create/show/delete/update the todolist and its items.
+
+Sample code for few basic operations:
+```ruby
+this.createTodoCat = function(){
+  var catName = document.getElementById('newTodoName').value;
+  console.log(catName);
+  var data = {"title": catName, "complete": false, "user_id": user_id};
+  $http.post('http://localhost:3000/v1/todos/', JSON.stringify(data)).
+  then(function(responseTodos) {
+      console.log(responseTodos);
+      if (responseTodos.data.data){
+        $scope.Todos.push(responseTodos.data.data);
+        $scope.newTodo = false;
+        $scope.Todos.Items = [];
+        $scope.Todos.title = catName;
+        $scope.Todos.todo_id = responseTodos.data.data.id;
+      }
+     });
+  document.getElementById('newTodoName').value = "";
+};
+this.addTodoItem = function(){
+  var itemName = document.getElementById('newItemName').value;
+  console.log(itemName);
+  var data = {"name": itemName, "done": false};
+  var str = $scope.Todos.todo_id + '';
+  $http.post('http://localhost:3000/v1/todos/' + str + '/items', JSON.stringify(data)).
+    then(function(responseNewItem) {
+      console.log(responseNewItem);
+      if (responseNewItem.data.data){
+        $scope.Todos.Items.push(responseNewItem.data.data);
+      }
+     });
+   document.getElementById('newItemName').value = "";
+};
+this.deleteItem = function(item_id){
+  var itemIndex = $scope.Todos.Items.map(function(e) { return e.id; }).indexOf(item_id);
+  var str = item_id + '';
+  $http.delete('http://localhost:3000/v1/items/' + str).
+    then(function(delteResponse) {
+      console.log(delteResponse);
+      $scope.Todos.Items.splice(itemIndex, 1);
+     });
+  console.log("entered delete Item");
+};
+this.deleteTodo= function(todo_id){
+  var todoIndex = $scope.Todos.map(function(e) { return e.id; }).indexOf(todo_id);
+  var str = todo_id + '';
+  $http.delete('http://localhost:3000/v1/todos/' + str).
+    then(function(delteResponse) {
+      console.log(delteResponse);
+      $scope.Todos.splice(todoIndex, 1);
+      if ($scope.Todos.length > 0){
+        $scope.Todos.title = $scope.Todos[0].attributes.title;
+        $scope.Todos.todo_id = $scope.Todos[0].todo_id;
+        $state.reload();
+      }
+     });
+  console.log("entered delete todo");
+};
+```
+The JSON response from these api-calls has been manipulated to fit the controls on the views.
