@@ -53,9 +53,9 @@ social:
   # - title: stack-overflow
   #   url: http://stackoverflow.com/questions/tagged/jekyll
   - title: linkedin
-    url: http://linkedin.com/chamukallem
+    url: https://linkedin.com/in/ChamuKallem
   - title: github
-    url: http://github.com/chamukallem
+    url: https://github.com/chamukallem
 
 # Postal address (add as many lines as necessary)
 address:
