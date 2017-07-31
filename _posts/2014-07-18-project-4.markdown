@@ -7,7 +7,7 @@ img: ChalkEmOffApp.png
 icon: fa-list-alt
 alt: image-alt
 project-date: February 2017
-client: 
+client: https://chalkemoffapp.herokuapp.com
 category: Web Development, AngularJS, Rails
 description: Create Todos and chalk 'em off.
 
