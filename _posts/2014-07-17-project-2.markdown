@@ -7,7 +7,7 @@ title: Confabb
 icon: fa-comments-o
 alt: image-alt
 project-date: April 2014
-client:
+client: https://confab-v1.herokuapp.com/
 category: Web Development
 description: A basic chat room app built using Rails and Google Firebase.
 

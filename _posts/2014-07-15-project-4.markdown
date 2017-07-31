@@ -7,7 +7,7 @@ alt: image-alt
 title: KiddosCal
 icon: fa-calendar-check-o
 project-date: April 2014
-client: Start Bootstrap
+client: https://kiddoscalapp-v2.herokuapp.com/
 category: Web Development
 description: A calendar organizer for kids! Built with ReactJS and Google Firebase.
 

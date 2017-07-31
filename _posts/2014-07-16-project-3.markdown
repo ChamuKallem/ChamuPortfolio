@@ -7,7 +7,7 @@ alt: image-alt
 icon: fa-info-circle
 title: Infopedia
 project-date: April 2014
-client:
+client: https://infopedia.herokuapp.com/
 category: Web Development
 description: Create wikis and share information.
 
